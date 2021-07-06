@@ -5,13 +5,14 @@ import (
 	"math/rand"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 )
 
 type (
-	Cartoon int
-	cartoon struct {
-		ID      Cartoon
+	CartoonIdx int
+	Cartoon    struct {
+		ID      CartoonIdx
 		Name    string
 		MinDate int64
 		BaseUrl string
@@ -19,27 +20,19 @@ type (
 )
 
 const (
-	Dilbert Cartoon = iota
+	DILBERT = CartoonIdx(iota)
+	DEFAULT
 )
 
 var (
-	cartoons = map[Cartoon]*cartoon{}
+	cartoons = map[CartoonIdx]*Cartoon{}
 )
 
-func loadCartoons() {
-	c := &cartoon{
-		ID:      Dilbert,
-		Name:    "dilbert",
-		MinDate: time.Date(1989, 4, 16, 0, 0, 0, 0, time.UTC).Unix(),
-		BaseUrl: "http://dilbert.com/strip/",
-	}
-	cartoons[Dilbert] = c
-}
-
 func main() {
+	loadCartoons()
+	http.HandleFunc("/", cartoonHandler)
 	http.HandleFunc("/cartoon", cartoonHandler)
 	http.HandleFunc("/dilbert", cartoonHandler)
-	loadCartoons()
 	port := os.Getenv("PORT")
 	log.Print("Listening on :" + port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
@@ -47,11 +40,36 @@ func main() {
 
 func cartoonHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print(r.URL.Path)
-	http.Redirect(w, r, dilbertURL(1), http.StatusSeeOther)
+	http.Redirect(w, r, buildURL(r.URL.Path), http.StatusSeeOther)
 }
 
-func dilbertURL(offset int) string {
-	c := cartoons[Dilbert]
+func loadCartoons() {
+	c := &Cartoon{DILBERT, "dilbert", time.Date(1989, 4, 16, 0, 0, 0, 0, time.UTC).Unix(), "http://dilbert.com/strip/"}
+	cartoons[DILBERT] = c
+	cartoons[DEFAULT] = c
+}
+
+func cartoonSelector(name string) Cartoon {
+	for _, v := range cartoons {
+		if v.Name == name {
+			return *v
+		}
+	}
+	return *(cartoons[DEFAULT])
+}
+
+func buildURL(path string) string {
+	p := strings.ReplaceAll(path, "/", "")
+	c := cartoonSelector(p)
+	switch c.ID {
+	case DILBERT:
+		return dilbertURL(c)
+	default:
+		return dilbertURL(c)
+	}
+}
+
+func dilbertURL(c Cartoon) string {
 	log.Print(c)
 	// today := time.Now()
 	// target := today.AddDate(-5, 0, 0)
