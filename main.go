@@ -4,6 +4,7 @@ import (
 	"log"
 	"math/rand"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -39,7 +40,9 @@ func main() {
 	http.HandleFunc("/cartoon", cartoonHandler)
 	http.HandleFunc("/dilbert", cartoonHandler)
 	loadCartoons()
-	http.ListenAndServe(":3000", nil)
+	port := os.Getenv("PORT")
+	log.Print("Listening on :" + port)
+	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
 
 func cartoonHandler(w http.ResponseWriter, r *http.Request) {
