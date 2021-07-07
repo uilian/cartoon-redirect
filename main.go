@@ -21,6 +21,7 @@ type (
 
 const (
 	DILBERT = CartoonIdx(iota)
+	CALVIN
 	DEFAULT
 )
 
@@ -42,25 +43,24 @@ func getTargetDate(c Cartoon, period string) time.Time {
 func main() {
 	loadCartoons()
 	http.HandleFunc("/", cartoonHandler)
-	http.HandleFunc("/cartoon", cartoonHandler)
-	http.HandleFunc("/dilbert", cartoonHandler)
 	port := os.Getenv("PORT")
 	log.Print("Listening on :" + port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
 
 func cartoonHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print(r.URL.Path)
-	log.Print(r.URL.Query())
-	path := strings.Split(r.URL.Path, "/")
+	log.Print("r.URL.Path: ", r.URL.Path)
+	log.Print("r.URL.Query(): ", r.URL.Query())
+	path := strings.Split(r.URL.Path, "/")[1]
+	log.Print("path: ", path)
 	period := r.URL.Query().Get("period")
-	http.Redirect(w, r, buildRedirectURL(path[0], period), http.StatusSeeOther)
+	http.Redirect(w, r, buildRedirectURL(path, period), http.StatusSeeOther)
 }
 
 func loadCartoons() {
-	c := &Cartoon{DILBERT, DILBERT.toString(), time.Date(1989, 4, 16, 0, 0, 0, 0, time.UTC).Unix(), "http://dilbert.com/strip/"}
-	cartoons[DILBERT] = c
-	cartoons[DEFAULT] = c
+	cartoons[DILBERT] = &Cartoon{DILBERT, DILBERT.toString(), time.Date(1989, 4, 16, 0, 0, 0, 0, time.UTC).Unix(), "http://dilbert.com/strip/"}
+	cartoons[CALVIN] = &Cartoon{CALVIN, CALVIN.toString(), time.Date(2007, 1, 1, 0, 0, 0, 0, time.UTC).Unix(), "https://www.gocomics.com/calvinandhobbes/"}
+	cartoons[DEFAULT] = cartoons[DILBERT]
 }
 
 func cartoonSelector(name string) Cartoon {
@@ -77,6 +77,8 @@ func buildRedirectURL(name string, period string) string {
 	switch c.ID {
 	case DILBERT:
 		return dilbertURL(c, getTargetDate(c, period))
+	case CALVIN:
+		return calvinURL(c, getTargetDate(c, period))
 	default:
 		return dilbertURL(c, getTargetDate(c, period))
 	}
@@ -86,6 +88,12 @@ func dilbertURL(c Cartoon, t time.Time) string {
 	log.Print(c, t)
 	// target := today.AddDate(-5, 0, 0)
 	path := c.BaseUrl + t.Format("2006-01-02")
+	return path
+}
+
+func calvinURL(c Cartoon, t time.Time) string {
+	log.Print(c, t)
+	path := c.BaseUrl + t.Format("2006/01/02")
 	return path
 }
 
@@ -100,6 +108,8 @@ func (c CartoonIdx) toString() string {
 	switch c {
 	case DILBERT:
 		return "dilbert"
+	case CALVIN:
+		return "calvin"
 	default:
 		return "dilbert"
 	}
