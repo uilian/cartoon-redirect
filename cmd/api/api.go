@@ -13,16 +13,16 @@ import (
 var cartoonList []cartoon.Cartoon = cartoon.LoadCartoons()
 
 func RedirectHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("Path: ", r.URL.Path)
-	log.Print("Query: ", r.URL.Query())
 	path := strings.Split(r.URL.Path, "/")[1]
 	period := r.URL.Query().Get("q")
-	http.Redirect(w, r, buildRedirectURL(path, period), http.StatusSeeOther)
+	url := buildRedirectURL(path, period)
+	log.Print("Redirecting to: ", url)
+	http.Redirect(w, r, url, http.StatusSeeOther)
 }
 
 func buildRedirectURL(name string, period string) string {
 	c := cartoonSelector(name)
-	log.Print(c)
+	log.Print("Selected: ", c.ID, " - ", c.Name)
 	switch c.ID {
 	case cartoon.DILBERT:
 		return dilbertURL(c, getTargetDate(c, period))
@@ -36,10 +36,12 @@ func buildRedirectURL(name string, period string) string {
 }
 
 func cartoonSelector(name string) cartoon.Cartoon {
-	// tries to find the cartoon with the same name
-	for _, v := range cartoonList {
-		if v.Name == name {
-			return v
+	if len(name) > 0 {
+		// tries to find the cartoon with the same name
+		for _, v := range cartoonList {
+			if v.Name == name {
+				return v
+			}
 		}
 	}
 	// pick one of the available cartoons

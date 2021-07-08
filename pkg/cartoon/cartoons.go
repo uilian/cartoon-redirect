@@ -26,7 +26,7 @@ const (
 
 func LoadCartoons() []Cartoon {
 	log.Print("Building cartoon list ...")
-	cartoons := make([]Cartoon, 10)
+	cartoons := make([]Cartoon, int(DEFAULT)+1)
 	cartoons[DILBERT] = Cartoon{DILBERT, DILBERT.toString(), time.Date(1989, 4, 16, 0, 0, 0, 0, time.UTC).Unix(), "http://dilbert.com/strip/"}
 	cartoons[CALVIN] = Cartoon{CALVIN, CALVIN.toString(), time.Date(2007, 1, 1, 0, 0, 0, 0, time.UTC).Unix(), "https://www.gocomics.com/calvinandhobbes/"}
 	cartoons[GARFIELD] = Cartoon{GARFIELD, GARFIELD.toString(), time.Date(1978, 6, 19, 0, 0, 0, 0, time.UTC).Unix(), "https://www.gocomics.com/garfield/"}
