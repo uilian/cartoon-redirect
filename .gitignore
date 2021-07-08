@@ -6,7 +6,6 @@
 *.dll
 *.so
 *.dylib
-cartoon-redirect
 
 # Test binary, built with `go test -c`
 *.test

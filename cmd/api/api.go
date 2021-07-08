@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	cartoon "github.com/uilian/cartoon-redirect/pkg/cartoon"
+	cartoon "github.com/uilian/cartoon-redirect/internal/cartoon"
 )
 
 var cartoonList []cartoon.Cartoon = cartoon.LoadCartoons()
