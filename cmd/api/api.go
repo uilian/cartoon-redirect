@@ -10,7 +10,7 @@ import (
 	cartoon "github.com/uilian/cartoon-redirect/internal/cartoon"
 )
 
-var cartoonList []cartoon.Cartoon = cartoon.LoadCartoons()
+var cartoonList = cartoon.LoadCartoons()
 
 func RedirectHandler(w http.ResponseWriter, r *http.Request) {
 	path := strings.Split(r.URL.Path, "/")[1]
@@ -40,13 +40,13 @@ func cartoonSelector(name string) cartoon.Cartoon {
 		// tries to find the cartoon with the same name
 		for _, v := range cartoonList {
 			if v.Name == name {
-				return v
+				return *v
 			}
 		}
 	}
 	// pick one of the available cartoons
 	r := cartoon.CartoonIdx(rand.Intn(int(cartoon.DEFAULT)))
-	return cartoonList[r]
+	return *cartoonList[r]
 }
 
 func dilbertURL(c cartoon.Cartoon, t time.Time) string {
