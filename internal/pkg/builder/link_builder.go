@@ -1,26 +1,16 @@
-package api
+package builder
 
 import (
 	"log"
 	"math/rand"
-	"net/http"
-	"strings"
 	"time"
 
-	cartoon "github.com/uilian/cartoon-redirect/internal/cartoon"
+	cartoon "github.com/uilian/cartoon-redirect/internal/pkg/cartoon"
 )
 
 var cartoonList = cartoon.LoadCartoons()
 
-func RedirectHandler(w http.ResponseWriter, r *http.Request) {
-	path := strings.Split(r.URL.Path, "/")[1]
-	period := r.URL.Query().Get("q")
-	url := buildRedirectURL(path, period)
-	log.Print("Redirecting to: ", url)
-	http.Redirect(w, r, url, http.StatusSeeOther)
-}
-
-func buildRedirectURL(name string, period string) string {
+func BuildRedirectURL(name string, period string) string {
 	c := cartoonSelector(name)
 	log.Print("Selected: ", c.ID, " - ", c.Name)
 	switch c.ID {
