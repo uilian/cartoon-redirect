@@ -1,26 +1,16 @@
-package api
+package builder
 
 import (
 	"log"
 	"math/rand"
-	"net/http"
-	"strings"
 	"time"
 
-	cartoon "github.com/uilian/cartoon-redirect/internal/cartoon"
+	cartoon "github.com/uilian/cartoon-redirect/internal/pkg/cartoon"
 )
 
-var cartoonList []cartoon.Cartoon = cartoon.LoadCartoons()
+var cartoonList = cartoon.LoadCartoons()
 
-func RedirectHandler(w http.ResponseWriter, r *http.Request) {
-	path := strings.Split(r.URL.Path, "/")[1]
-	period := r.URL.Query().Get("q")
-	url := buildRedirectURL(path, period)
-	log.Print("Redirecting to: ", url)
-	http.Redirect(w, r, url, http.StatusSeeOther)
-}
-
-func buildRedirectURL(name string, period string) string {
+func BuildRedirectURL(name string, period string) string {
 	c := cartoonSelector(name)
 	log.Print("Selected: ", c.ID, " - ", c.Name)
 	switch c.ID {
@@ -40,13 +30,13 @@ func cartoonSelector(name string) cartoon.Cartoon {
 		// tries to find the cartoon with the same name
 		for _, v := range cartoonList {
 			if v.Name == name {
-				return v
+				return *v
 			}
 		}
 	}
 	// pick one of the available cartoons
 	r := cartoon.CartoonIdx(rand.Intn(int(cartoon.DEFAULT)))
-	return cartoonList[r]
+	return *cartoonList[r]
 }
 
 func dilbertURL(c cartoon.Cartoon, t time.Time) string {
