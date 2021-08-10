@@ -8,8 +8,6 @@ import (
 	cartoon "github.com/uilian/cartoon-redirect/internal/pkg/cartoon"
 )
 
-var cartoonList = cartoon.LoadCartoons()
-
 func BuildRedirectURL(name string, period string) string {
 	c := cartoonSelector(name)
 	log.Print("Selected: ", c.ID, " - ", c.Name)
@@ -28,15 +26,15 @@ func BuildRedirectURL(name string, period string) string {
 func cartoonSelector(name string) cartoon.Cartoon {
 	if len(name) > 0 {
 		// tries to find the cartoon with the same name
-		for _, v := range cartoonList {
+		for _, v := range *cartoon.GetCartoonList() {
 			if v.Name == name {
-				return *v
+				return v
 			}
 		}
 	}
 	// pick one of the available cartoons
 	r := cartoon.CartoonIdx(rand.Intn(int(cartoon.DEFAULT)))
-	return *cartoonList[r]
+	return (*cartoon.GetCartoonList())[r]
 }
 
 func dilbertURL(c cartoon.Cartoon, t time.Time) string {
