@@ -12,14 +12,15 @@ func BuildRedirectURL(name string, period string) string {
 	c := cartoonSelector(name)
 	log.Print("Selected: ", c.ID, " - ", c.Name)
 	switch c.ID {
+	default:
+		return dilbertURL(c, getTargetDate(c, period))
 	case cartoon.DILBERT:
 		return dilbertURL(c, getTargetDate(c, period))
 	case cartoon.CALVIN, cartoon.GARFIELD, cartoon.PEANUTS:
 		return gocomicsURL(c, getTargetDate(c, period))
 	case cartoon.XKCD:
 		return xkcdURL(c, period)
-	default:
-		return dilbertURL(c, getTargetDate(c, period))
+
 	}
 }
 
@@ -33,8 +34,7 @@ func cartoonSelector(name string) cartoon.Cartoon {
 		}
 	}
 	// pick one of the available cartoons
-	r := cartoon.CartoonIdx(rand.Intn(int(cartoon.DEFAULT)))
-	return (*cartoon.GetCartoonList())[r]
+	return cartoon.Random()
 }
 
 func dilbertURL(c cartoon.Cartoon, t time.Time) string {
