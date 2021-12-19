@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	builder "github.com/uilian/cartoon-redirect/internal/pkg/builder"
+	cartoon "github.com/uilian/cartoon-redirect/internal/pkg/cartoon"
 )
 
 func main() {
@@ -22,7 +22,7 @@ func main() {
 func RedirectHandler(w http.ResponseWriter, r *http.Request) {
 	path := strings.Split(r.URL.Path, "/")[1]
 	period := r.URL.Query().Get("q")
-	url := builder.BuildRedirectURL(path, period)
+	url := cartoon.GenerateURL(path, period)
 	log.Printf("Redirecting to: %s", url)
 	http.Redirect(w, r, url, http.StatusSeeOther)
 }

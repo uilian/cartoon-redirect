@@ -1,53 +1,51 @@
-package builder
+package cartoon
 
 import (
 	"log"
 	"math/rand"
 	"time"
-
-	cartoon "github.com/uilian/cartoon-redirect/internal/pkg/cartoon"
 )
 
-func BuildRedirectURL(name string, period string) string {
+func GenerateURL(name string, period string) string {
 	c := cartoonSelector(name)
 	log.Print("Selected: ", c.ID, " - ", c.Name)
 	switch c.ID {
 	default:
 		return dilbertURL(c, getTargetDate(c, period))
-	case cartoon.DILBERT:
+	case DILBERT:
 		return dilbertURL(c, getTargetDate(c, period))
-	case cartoon.CALVIN, cartoon.GARFIELD, cartoon.PEANUTS:
+	case CALVIN, GARFIELD, PEANUTS:
 		return gocomicsURL(c, getTargetDate(c, period))
-	case cartoon.XKCD:
+	case XKCD:
 		return xkcdURL(c, period)
 
 	}
 }
 
-func cartoonSelector(name string) cartoon.Cartoon {
+func cartoonSelector(name string) Cartoon {
 	if len(name) > 0 {
 		// tries to find the cartoon with the same name
-		for _, v := range *cartoon.GetCartoonList() {
+		for _, v := range *GetCartoonList() {
 			if v.Name == name {
 				return v
 			}
 		}
 	}
 	// pick one of the available cartoons
-	return cartoon.Random()
+	return Random()
 }
 
-func dilbertURL(c cartoon.Cartoon, t time.Time) string {
+func dilbertURL(c Cartoon, t time.Time) string {
 	path := c.BaseUrl + t.Format("2006-01-02")
 	return path
 }
 
-func gocomicsURL(c cartoon.Cartoon, t time.Time) string {
+func gocomicsURL(c Cartoon, t time.Time) string {
 	path := c.BaseUrl + t.Format("2006/01/02")
 	return path
 }
 
-func xkcdURL(c cartoon.Cartoon, p string) string {
+func xkcdURL(c Cartoon, p string) string {
 	switch {
 	case p == "latest":
 		return c.BaseUrl
@@ -58,7 +56,7 @@ func xkcdURL(c cartoon.Cartoon, p string) string {
 	}
 }
 
-func getTargetDate(c cartoon.Cartoon, period string) time.Time {
+func getTargetDate(c Cartoon, period string) time.Time {
 	switch {
 	case period == "latest":
 		return time.Now()

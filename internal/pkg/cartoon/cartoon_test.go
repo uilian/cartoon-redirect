@@ -1,12 +1,30 @@
-package builder
+package cartoon
 
 import (
+	"fmt"
 	"regexp"
 	"testing"
 	"time"
 )
 
-func Test_Builder(t *testing.T) {
+func TestGetCartoonList(t *testing.T) {
+	cl := GetCartoonList()
+	l := len(*cl)
+	if l > int(end) {
+		t.Errorf("got len(cartoons) = %d; wanted %d", l, int(end))
+	}
+	if (*cl)[DILBERT] != (*cl)[UNKNOWN] {
+		t.Errorf("got wrong default value %v; wanted %v", (*cl)[UNKNOWN], (*cl)[DILBERT])
+	}
+
+	for _, c := range *cl {
+		if got := c.ID; !got.isValid() {
+			t.Errorf("cartoon id is not valid = %v, want %v", got, "0.."+fmt.Sprint(end-1))
+		}
+	}
+}
+
+func TestURL(t *testing.T) {
 	var re = regexp.MustCompile(`(?m)^(ftp|http|https):\/\/[^ "]+$`)
 	tests := []struct {
 		name string
@@ -19,7 +37,7 @@ func Test_Builder(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := BuildRedirectURL(tt.c, tt.p)
+			got := GenerateURL(tt.c, tt.p)
 			if tt.p == "latest" && got != tt.want {
 				t.Errorf("Got: '%v', wanted: '%v'", got, tt.want)
 			}
