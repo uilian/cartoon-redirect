@@ -8,8 +8,8 @@ import (
 
 func GenerateURL(name string, period string) string {
 	c := cartoonSelector(name)
-	log.Print("Selected: ", c.ID, " - ", c.Name)
-	switch c.ID {
+	log.Print("Selected: ", c.id, " - ", c.name)
+	switch c.id {
 	default:
 		return dilbertURL(c, getTargetDate(c, period))
 	case DILBERT:
@@ -26,7 +26,7 @@ func cartoonSelector(name string) Cartoon {
 	if len(name) > 0 {
 		// tries to find the cartoon with the same name
 		for _, v := range *GetCartoonList() {
-			if v.Name == name {
+			if v.name == name {
 				return v
 			}
 		}
@@ -36,23 +36,23 @@ func cartoonSelector(name string) Cartoon {
 }
 
 func dilbertURL(c Cartoon, t time.Time) string {
-	path := c.BaseUrl + t.Format("2006-01-02")
+	path := c.baseUrl + t.Format("2006-01-02")
 	return path
 }
 
 func gocomicsURL(c Cartoon, t time.Time) string {
-	path := c.BaseUrl + t.Format("2006/01/02")
+	path := c.baseUrl + t.Format("2006/01/02")
 	return path
 }
 
 func xkcdURL(c Cartoon, p string) string {
 	switch {
 	case p == "latest":
-		return c.BaseUrl
+		return c.baseUrl
 	case p == "random":
 		return "https://c.xkcd.com/comic/random"
 	default:
-		return c.BaseUrl
+		return c.baseUrl
 	}
 }
 
@@ -61,7 +61,7 @@ func getTargetDate(c Cartoon, period string) time.Time {
 	case period == "latest":
 		return time.Now()
 	case period == "random":
-		return randate(c.MinDate)
+		return randate(c.minDate)
 	default:
 		return time.Now()
 	}

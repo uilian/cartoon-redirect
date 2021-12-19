@@ -18,7 +18,7 @@ func TestGetCartoonList(t *testing.T) {
 	}
 
 	for _, c := range *cl {
-		if got := c.ID; !got.isValid() {
+		if got := c.id; !got.isValid() {
 			t.Errorf("cartoon id is not valid = %v, want %v", got, "0.."+fmt.Sprint(end-1))
 		}
 	}

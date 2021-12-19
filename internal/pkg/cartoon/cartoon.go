@@ -8,17 +8,17 @@ import (
 )
 
 type (
-	CartoonIdx int
+	cartoonIdx int
 	Cartoon    struct {
-		ID      CartoonIdx
-		Name    string
-		MinDate int64
-		BaseUrl string
+		id      cartoonIdx
+		name    string
+		minDate int64
+		baseUrl string
 	}
 )
 
 const (
-	UNKNOWN = CartoonIdx(iota)
+	UNKNOWN = cartoonIdx(iota)
 	DILBERT
 	CALVIN
 	GARFIELD
@@ -53,11 +53,11 @@ func Random() Cartoon {
 	return (*GetCartoonList())[rand.Intn(int(end))]
 }
 
-func (c CartoonIdx) isValid() bool {
+func (c cartoonIdx) isValid() bool {
 	return c < end
 }
 
-func (c CartoonIdx) toString() string {
+func (c cartoonIdx) toString() string {
 	switch c {
 	default:
 		return "unknown"
